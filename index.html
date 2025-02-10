@@ -8,8 +8,17 @@
         let leaderboard = [];
 
         async function fetchLeaderboard() {
-            leaderboard = await fetch("https://kcperez.github.io/firewall-leaderboard/leaderboard.json").then(res => res.json());
-            updateLeaderboard();
+            try {
+                const response = await fetch("https://kcperez.github.io/firewall-leaderboard/leaderboard.json");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                leaderboard = await response.json();
+                console.log("Fetched Data:", leaderboard); // Debugging step
+                updateLeaderboard();
+            } catch (error) {
+                console.error("Error loading leaderboard:", error);
+            }
         }
 
         function updateLeaderboard() {
@@ -23,14 +32,16 @@
             let hotSlothsVerified = 0;
 
             leaderboard.forEach(entry => {
+                const sparks = entry.Sparks ? entry.Sparks.toLocaleString() : "0";
+
                 const row = `<tr>
                     <td>${entry.Address}</td>
                     <td>${entry.Verification}</td>
-                    <td>${entry.Sparks.toLocaleString()}</td>
+                    <td>${sparks}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
 
-                totalSparksCount += entry.Sparks;
+                totalSparksCount += entry.Sparks || 0;
                 if (entry.Verification === "Valid") {
                     hotSlothsVerified++;
                 }
@@ -48,10 +59,12 @@
 
             leaderboard.filter(entry => entry.Address.toLowerCase().includes(searchValue))
                 .forEach(entry => {
+                    const sparks = entry.Sparks ? entry.Sparks.toLocaleString() : "0";
+
                     const row = `<tr>
                         <td>${entry.Address}</td>
                         <td>${entry.Verification}</td>
-                        <td>${entry.Sparks.toLocaleString()}</td>
+                        <td>${sparks}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
                 });

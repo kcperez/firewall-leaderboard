@@ -8,7 +8,7 @@
         let leaderboard = [];
 
         async function fetchLeaderboard() {
-            leaderboard = await fetch('leaderboard.json').then(res => res.json());
+            leaderboard = await fetch("https://kcperez.github.io/firewall-leaderboard/leaderboard.json").then(res => res.json());
             updateLeaderboard();
         }
 
